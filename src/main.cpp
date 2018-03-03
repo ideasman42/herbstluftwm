@@ -945,6 +945,9 @@ void maprequest(XEvent* event) {
         HSClient* client = manage_client(mapreq->window);
         if (client && find_monitor_with_tag(client->tag)) {
             XMapWindow(g_display, mapreq->window);
+            if (*g_mouse_follows_focus) {
+                mouse_to_client();
+            }
         }
     }
     // else: ignore all other maprequests from windows

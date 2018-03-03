@@ -920,6 +920,9 @@ void client_set_fullscreen(HSClient* client, bool state) {
     char buf[STRING_BUF_SIZE];
     snprintf(buf, STRING_BUF_SIZE, "0x%lx", client->window);
     ewmh_update_window_state(client);
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     hook_emit_list("fullscreen", state ? "on" : "off", buf, NULL);
 }
 

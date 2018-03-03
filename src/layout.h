@@ -97,6 +97,7 @@ typedef struct HSFrame {
 extern HSFrame*    g_cur_frame; // currently selected frame
 extern int* g_frame_gap;
 extern int* g_window_gap;
+extern int* g_mouse_follows_focus;
 
 // functions
 void layout_init();
@@ -135,6 +136,8 @@ char* load_frame_tree(HSFrame* frame, char* description, GString* errormsg);
 int find_layout_by_name(char* name);
 int find_align_by_name(char* name);
 
+
+const Rectangle* frame_last_focused_rect(HSFrame* frame);
 int frame_current_bring(int argc, char** argv, GString* output);
 int frame_current_set_selection(int argc, char** argv);
 int frame_current_cycle_selection(int argc, char** argv);
@@ -188,6 +191,8 @@ int frame_focus_edge(int argc, char** argv, GString* output);
 int frame_move_window_edge(int argc, char** argv, GString* output);
 
 bool smart_window_surroundings_active(HSFrame* frame);
+
+void mouse_to_client(void);
 
 #endif
 

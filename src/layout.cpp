@@ -58,6 +58,7 @@ static unsigned long g_frame_normal_opacity;
 HSFrame*    g_cur_frame; // currently selected frame
 int* g_frame_gap;
 int* g_window_gap;
+int* g_mouse_follows_focus;
 int* g_spatial_focus;
 int* g_spatial_motion;
 
@@ -79,6 +80,7 @@ static void fetch_frame_colors() {
     g_frame_gap = &(settings_find("frame_gap")->value.i);
     g_frame_padding = &(settings_find("frame_padding")->value.i);
     g_window_gap = &(settings_find("window_gap")->value.i);
+    g_mouse_follows_focus = &(settings_find("mouse_follows_focus")->value.i);
     g_spatial_focus = &(settings_find("spatial_focus")->value.i);
     g_spatial_motion = &(settings_find("spatial_motion")->value.i);
     g_frame_border_width = &(settings_find("frame_border_width")->value.i);
@@ -813,6 +815,9 @@ int frame_current_cycle_client_layout(int argc, char** argv, GString* output) {
     }
     g_cur_frame->content.clients.layout = layout_index;
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -830,6 +835,9 @@ int frame_current_set_client_layout(int argc, char** argv, GString* output) {
     if (g_cur_frame && g_cur_frame->type == TYPE_CLIENTS) {
         g_cur_frame->content.clients.layout = layout;
         monitor_apply_layout(get_current_monitor());
+        if (*g_mouse_follows_focus) {
+            mouse_to_client();
+        }
     }
     return 0;
 }
@@ -1097,6 +1105,9 @@ int frame_current_bring(int argc, char** argv, GString* output) {
         frame_insert_client(g_cur_frame, client);
     }
     focus_client(client, false, false);
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1119,6 +1130,9 @@ int frame_current_set_selection(int argc, char** argv) {
     frame->content.clients.selection = index;
     HSClient* client = frame->content.clients.buf[index];
     client_window_focus(client);
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1143,6 +1157,9 @@ int frame_current_cycle_selection(int argc, char** argv) {
     index %= count;
     frame->content.clients.selection = index;
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1201,6 +1218,9 @@ int cycle_all_command(int argc, char** argv) {
         client_raise(c);
     }
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1212,6 +1232,9 @@ int cycle_frame_command(int argc, char** argv) {
     if (delta == 0) return 0;
     int direction = (delta > 0) ? 1 : 0;
     cycle_frame(direction, -2, false);
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1484,6 +1507,9 @@ int frame_split_command(int argc, char** argv, GString* output) {
     g_cur_frame = frame_current_selection();
     // redraw monitor
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -1745,6 +1771,11 @@ int frame_focus_command(int argc, char** argv, GString* output) {
         }
         monitor_focus_by_index(idx);
     }
+    if (neighbour_found) {
+        if (*g_mouse_follows_focus) {
+            mouse_to_client();
+        }
+    }
     return 0;
 }
 
@@ -1828,6 +1859,9 @@ int frame_move_window_command(int argc, char** argv, GString* output) {
                 "%s: No neighbour found\n", argv[0]);
             return HERBST_FORBIDDEN;
         }
+    }
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
     }
     return 0;
 }
@@ -2077,6 +2111,9 @@ static void frame_rotate(HSFrame* frame) {
 int layout_rotate_command() {
     frame_do_recursive(get_current_monitor()->tag->frame, frame_rotate, -1);
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
@@ -2124,6 +2161,9 @@ int frame_remove_command(int argc, char** argv) {
     // re-layout
     frame_focus_recursive(parent);
     monitor_apply_layout(get_current_monitor());
+    if (*g_mouse_follows_focus) {
+        mouse_to_client();
+    }
     return 0;
 }
 
