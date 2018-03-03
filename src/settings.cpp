@@ -82,6 +82,8 @@ SettingsPair g_settings[] = {
     SET_INT(    "default_direction_external_only", 0,           NULL          ),
     SET_INT(    "default_frame_layout",            0,           FR_COLORS     ),
     SET_INT(    "focus_follows_mouse",             0,           NULL          ),
+    SET_INT(    "spatial_focus",                   0,           NULL          ),
+    SET_INT(    "spatial_motion",                  0,           NULL          ),
     SET_INT(    "focus_stealing_prevention",       1,           NULL          ),
     SET_INT(    "swap_monitors_to_get_tag",        1,           NULL          ),
     SET_INT(    "raise_on_focus",                  0,           NULL          ),
